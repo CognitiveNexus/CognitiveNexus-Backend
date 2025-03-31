@@ -1,0 +1,7 @@
+{
+    "require": {
+        "ext-sqlite3": "*",
+        "flightphp/core": "^3.13",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}
