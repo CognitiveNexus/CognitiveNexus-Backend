@@ -6,11 +6,11 @@ class AuthController {
 
     public static function login() {
         ['username' => $username, 'password' => $password] = Flight::request()->data;
-        if(!$username) Flight::jsonHalt(['error' => '未提供用户名'], 406);
-        if(!$password) Flight::jsonHalt(['error' => '未提供密码'], 406);
+        if (!$username) Flight::jsonHalt(['error' => '未提供用户名'], 406);
+        if (!$password) Flight::jsonHalt(['error' => '未提供密码'], 406);
 
         $user = Flight::db()->fetchRow('SELECT id, username, password FROM users WHERE username = :username', ['username' => $username]);
-        if(!$user->count() || !password_verify($password, $user['password'])) {
+        if (!$user->count() || !password_verify($password, $user['password'])) {
             Flight::jsonHalt(['error' => '用户名或密码错误'], 406);
         }
         $token = self::generateToken($user['id']);
@@ -42,7 +42,7 @@ class AuthController {
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
         Flight::db()->runQuery('INSERT INTO users (username, password) VALUES (:username, :password)', [
             'username' => $username,
-            'password' => $hashedPassword
+            'password' => $hashedPassword,
         ]);
         Flight::db()->runQuery('UPDATE invite_codes SET is_used = 1 WHERE code = :code', ['code' => $inviteCode]);
         $userId = Flight::db()->lastInsertId();
@@ -51,11 +51,11 @@ class AuthController {
         Flight::json(['message' => '注册成功', 'username' => $username, 'token' => $token], 200);
     }
 
-    public static function checkToken($token){
+    public static function checkToken($token) {
         $tokenInfo = Flight::db()->fetchRow('SELECT user_id, expired_at FROM auth_tokens WHERE token = :token', ['token' => $token]);
-        if(!$tokenInfo->count()){
+        if (!$tokenInfo->count()) {
             return self::TOKEN_NOT_EXIST;
-        } else if(strtotime($tokenInfo['expired_at']) < time()) {
+        } else if (strtotime($tokenInfo['expired_at']) < time()) {
             return self::TOKEN_EXPIRED;
         } else {
             return $tokenInfo['user_id'];
@@ -76,15 +76,15 @@ class AuthController {
     }
     private static function generateToken($userId, $insert = false) {
         $token = bin2hex(random_bytes(16));
-        if($insert){
+        if ($insert) {
             $query = 'INSERT INTO auth_tokens (user_id, token, expired_at) VALUES (:user_id, :token, :expired_at)';
-        }else{
+        } else {
             $query = 'UPDATE auth_tokens SET token = :token, expired_at = :expired_at WHERE user_id = :user_id';
         }
         Flight::db()->runQuery($query, [
             'user_id' => $userId,
             'token' => $token,
-            'expired_at' => date('Y-m-d H:i:s', strtotime('+30 days'))
+            'expired_at' => date('Y-m-d H:i:s', strtotime('+30 days')),
         ]);
         return $token;
     }

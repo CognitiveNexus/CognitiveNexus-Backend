@@ -9,7 +9,7 @@ class CodeController {
                 'method' => 'POST',
                 'header' => 'Content-Type: application/json',
                 'content' => json_encode(['code' => $code, 'stdin' => $stdin, 'usst' => '1906']),
-            ]
+            ],
         ]);
 
         $response = file_get_contents("{$_ENV['CODE_RUNNER_HOST']}/run.php", false, $context);

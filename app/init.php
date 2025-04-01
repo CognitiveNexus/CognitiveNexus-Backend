@@ -39,7 +39,7 @@ if (!file_exists($dbPath)) {
 
 Flight::register('db', \flight\database\PdoWrapper::class, ["sqlite:{$dbPath}"]);
 
-if($_ENV['ENVIRONMENT'] !== 'development') {
+if ($_ENV['ENVIRONMENT'] !== 'development') {
     Flight::set('flight.log_errors', true);
     Flight::map('notFound', function () {
         Flight::jsonHalt(['error' => '请求的路径不存在'], 404);
