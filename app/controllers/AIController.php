@@ -10,7 +10,7 @@ class AIController {
             Flight::jsonHalt(['error' => '聊天记录不正确'], 406);
         }
         foreach ($messages as $message) {
-            if ($message['role'] != 'user' && $message['role'] != 'assistant') {
+            if ($message['role'] != 'user' && $message['role'] != 'assistant' || !isset($message['content'])) {
                 Flight::jsonHalt(['error' => '聊天记录不正确'], 406);
             }
         }
@@ -21,6 +21,9 @@ class AIController {
         } else {
             Flight::jsonHalt(['error' => "无法调用模型 {$model}"], 406);
         }
+
+        echo json_encode(['success' => '请求中']);
+        ob_flush();
 
         $client = OpenAI::factory()
             ->withBaseUri($host)
