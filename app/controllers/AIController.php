@@ -22,32 +22,67 @@ class AIController {
             Flight::jsonHalt(['error' => "无法调用模型 {$model}"], 406);
         }
 
-        echo json_encode(['success' => '请求中']);
-        ob_flush();
-        flush();
+        function handleChunk($chunk) {
+            $reply = ['success' => true];
+            if (isset($chunk->choices[0]->delta)) {
+                $delta = $chunk->choices[0]->delta;
+                if (isset($delta->reasoning_content)) {
+                    $reply['reasoning_content'] = $delta->reasoning_content;
+                }
+                if (isset($delta->content)) {
+                    $reply['content'] = $delta->content;
+                }
+            }
+            echo json_encode($reply)."\n\n";
+            ob_flush();
+            flush();
+        }
 
-        $client = OpenAI::factory()
-            ->withBaseUri($host)
-            ->withApiKey($key)
-            ->make();
-
-        $stream = $client->chat()->createStreamed([
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "{$host}/chat/completions");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$key}",
+            'Content-Type: application/json',
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
             'model' => $model,
             'messages' => [
                 ['role' => 'system', 'content' => $_ENV['AI_PROMPT']],
-                ...Flight::request()->data->messages,
+                ...$messages,
             ],
             'temperature' => 0,
-        ]);
-
-        foreach ($stream as $chunk) {
-            if (isset($chunk['choices'][0]['delta']['content'])) {
-                echo $chunk['choices'][0]['delta']['content'];
-                ob_flush();
-                flush();
+            'stream' => true,
+        ]));
+        curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($ch, $data) {
+            $lines = explode("\n\n", trim($data));
+            foreach ($lines as $line) {
+                if (strpos($line, 'data: ') === 0) {
+                    $chunk = substr($line, 6);
+                    if ($chunk != '[DONE]') {
+                        $chunk = json_decode($chunk);
+                        if ($chunk) {
+                            handleChunk($chunk);
+                        }
+                    }
+                } else if (strlen(trim($line)) && strpos($line, ':') !== 0) {
+                    throw new Exception(trim($line));
+                }
             }
-        }
+            return strlen($data);
+        });
 
-        ob_end_flush();
+        try {
+            curl_exec($ch);
+            if (curl_errno($ch)) {
+                throw new Exception(curl_error($ch));
+            }
+        } catch (Exception $err) {
+            Flight::jsonHalt(['error' => $err->getMessage()], 500);
+        } finally {
+            curl_close($ch);
+            ob_end_flush();
+        }
     }
 }

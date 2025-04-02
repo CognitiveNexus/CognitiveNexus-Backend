@@ -24,7 +24,7 @@ cd CognitiveNexus-Backend
 1.  安装 `php-fpm`：
 
     ```bash
-    sudo apt-get install php8.1-fpm php8.1-sqlite3 composer
+    sudo apt-get install php8.1-fpm php8.1-curl php8.1-sqlite3 composer
     ```
 
 2.  安装 Composer 依赖：

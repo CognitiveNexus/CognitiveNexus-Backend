@@ -3,13 +3,6 @@
         "ext-sqlite3": "*",
         "flightphp/core": "^3.13",
         "vlucas/phpdotenv": "^5.6",
-        "openai-php/client": "^0.10.3",
-        "symfony/http-client": "^6.4",
-        "nyholm/psr7": "^1.8"
-    },
-    "config": {
-        "allow-plugins": {
-            "php-http/discovery": true
-        }
+        "ext-curl": "*"
     }
 }
