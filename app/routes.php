@@ -12,6 +12,8 @@ Flight::group('/api', function () {
 
     Flight::group('', function () {
         Flight::route('POST /run-code', ['CodeController', 'runCode']);
-        Flight::route('POST /ask-ai/@model', ['AIController', 'askAI'])->stream();
+        Flight::route('POST /ask-ai/@model', ['AIController', 'askAI'])->streamWithHeaders([
+            'X-Accel-Buffering' => 'no',
+        ]);
     }, ['AuthMiddleware']);
 });

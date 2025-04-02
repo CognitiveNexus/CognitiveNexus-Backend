@@ -66,6 +66,7 @@ cd CognitiveNexus-Backend
         location ~ \.php$ {
             root /path/to/backend/public;   # 指向后端 public/ 文件夹
             include snippets/fastcgi-php.conf;
+            fastcgi_buffering off;
             fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
         }
     }

@@ -24,6 +24,7 @@ class AIController {
 
         echo json_encode(['success' => '请求中']);
         ob_flush();
+        flush();
 
         $client = OpenAI::factory()
             ->withBaseUri($host)
@@ -43,6 +44,7 @@ class AIController {
             if (isset($chunk['choices'][0]['delta']['content'])) {
                 echo $chunk['choices'][0]['delta']['content'];
                 ob_flush();
+                flush();
             }
         }
 
