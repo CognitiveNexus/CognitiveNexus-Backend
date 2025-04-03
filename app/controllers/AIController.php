@@ -16,7 +16,19 @@ class AIController {
             }
         }
 
-        if (preg_match('/^deepseek\-/', $model)) {
+        if ($model == 'test') {
+            if ($_ENV['ENVIRONMENT'] !== 'development') {
+                Flight::jsonHalt(['error' => "无法调用模型 {$model}"], 406);
+            }
+            sleep(1);
+            self::responseDelta(['reasoning_content' => '思考中…']);
+            sleep(5);
+            foreach (mb_str_split($messages[count($messages) - 1]['content']) as $char) {
+                self::responseDelta(['content' => $char]);
+                usleep(rand(0, 100000));
+            }
+            return;
+        } else if (preg_match('/^deepseek\-/', $model)) {
             $host = 'https://api.deepseek.com';
             $key = $_ENV['AI_DEEPSEEK_KEY'];
         } else {
@@ -63,8 +75,8 @@ class AIController {
                     'function' => [
                         'name' => 'getUserCode',
                         'description' => '获取用户提供的代码',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'temperature' => 0,
             'stream' => true,
