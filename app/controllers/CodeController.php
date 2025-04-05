@@ -53,8 +53,8 @@ class CodeController {
             ];
         } finally {
             $result['logs'] = [
-                'compile' => file_get_contents("{$tmpDir}/compile.log"),
-                'run' => file_get_contents("{$tmpDir}/run.log"),
+                'compile' => file_exists("{$tmpDir}/compile.log") ? file_get_contents("{$tmpDir}/compile.log") : false,
+                'run' => file_exists("{$tmpDir}/run.log") ? file_get_contents("{$tmpDir}/run.log") : false,
             ];
             Flight::json($result);
             array_map('unlink', glob("{$tmpDir}/*"));
