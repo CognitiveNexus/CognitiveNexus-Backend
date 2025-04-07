@@ -37,7 +37,7 @@ class AIController {
 
         try {
             while (true) {
-                $result = self::sendRequest($host, $key, $model, $messages);
+                $result = self::sendRequest($host, $key, $model, $messages, !!$code);
                 if ($result['finish'] != 'tool_calls') {
                     break;
                 }
@@ -62,11 +62,12 @@ class AIController {
         }
     }
 
-    private static function sendRequest($host, $key, $model, $messages) {
+    private static function sendRequest($host, $key, $model, $messages, $withCode) {
         $body = [
             'model' => $model,
             'messages' => [
                 ['role' => 'system', 'content' => $_ENV['AI_PROMPT']],
+                ['role' => 'system', 'content' => $withCode ? '用户提供了代码，你必须先使用 getUserCode function 来获取用户代码。' : '用户没有提供代码。如有需要，可以引导用户勾选“包含当前代码”按钮。'],
                 ...$messages,
             ],
             'tools' => [
