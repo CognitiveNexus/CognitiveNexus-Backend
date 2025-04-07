@@ -10,7 +10,7 @@
 
 ## 快速开始
 
-本项目主要面向 Ubuntu 22.04 LTS 编写，但也适用于其他操作系统，可参考相关文档进行配置。
+本项目主要面向 Ubuntu 22.04 LTS、macOS 15.3 Sequoia 编写，同样适用于其他 Linux 或 Unix 系操作系统。本文档中的指令以 Ubuntu 为例，其他系统可参考相关文档进行安装和配置。
 
 ### 1. 克隆项目
 
@@ -24,7 +24,7 @@ cd CognitiveNexus-Backend
 1.  安装 `php-fpm`：
 
     ```bash
-    sudo apt-get install php8.1-fpm php8.1-curl php8.1-sqlite3 composer
+    sudo apt-get install php8.1-fpm php8.1-curl php8.1-pgsql php8.1-uuid composer
     ```
 
 2.  安装 Composer 依赖：
@@ -35,7 +35,9 @@ cd CognitiveNexus-Backend
 
 3.  配置 HTTP 服务器：
 
-    推荐使用 Nginx 作为 HTTP 服务器，配置如下：
+    在测试环境中，可以直接运行 `./run-dev.sh` 启动 PHP 内置的 HTTP 服务器。但请注意，该服务器不得在生产环境中使用。
+
+    生产环境推荐使用 Nginx 作为 HTTP 服务器，配置如下：
 
     ```
     server {
@@ -76,6 +78,7 @@ cd CognitiveNexus-Backend
 
     -   重命名 .env.example 为 .env
     -   根据需要填写环境变量值
+    -   ENVIRONMENT 项填写 `development` 时，可以享受开发环境的便利（如，允许所有 CORS 请求、抛出的错误直接显示在请求中），但这些便利是牺牲安全性的，因此在生产环境中部署时，请务必将 ENVIRONMENT 项改为 `production`。
 
 ### 3. 启动服务
 
@@ -101,6 +104,5 @@ CognitiveNexus-Backend
 │   └── index.php               # 入口文件
 ├── README.md
 ├── storage/
-│   └── db.sqlite               # SQLite3 数据库，后续可能会迁移到其他数据库
 └── vendor/                     # Composer 依赖
 ```
