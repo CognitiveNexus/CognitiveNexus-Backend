@@ -1,0 +1,27 @@
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(15) NOT NULL UNIQUE,
+    password CHAR(60) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS invite_codes (
+    id SERIAL PRIMARY KEY,
+    code CHAR(29) NOT NULL UNIQUE,
+    is_used BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS auth_tokens (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    token CHAR(32) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expired_at TIMESTAMP NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS course_progress (
+    id SERIAL PRIMARY KEY,
+    course_name TEXT NOT NULL,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    progress INTEGER DEFAULT 0,
+    UNIQUE (course_name, user_id)
+);

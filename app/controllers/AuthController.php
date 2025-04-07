@@ -31,7 +31,7 @@ class AuthController {
             Flight::jsonHalt(['error' => '未提供邀请码'], 406);
         }
 
-        $invite = Flight::db()->fetchRow('SELECT * FROM invite_codes WHERE code = :code AND is_used = 0', ['code' => $inviteCode]);
+        $invite = Flight::db()->fetchRow('SELECT * FROM invite_codes WHERE code = :code AND is_used = FALSE', ['code' => $inviteCode]);
         if (!$invite->count()) {
             Flight::jsonHalt(['error' => '邀请码无效或已被使用'], 406);
         }
@@ -44,7 +44,7 @@ class AuthController {
             'username' => $username,
             'password' => $hashedPassword,
         ]);
-        Flight::db()->runQuery('UPDATE invite_codes SET is_used = 1 WHERE code = :code', ['code' => $inviteCode]);
+        Flight::db()->runQuery('UPDATE invite_codes SET is_used = TRUE WHERE code = :code', ['code' => $inviteCode]);
         $userId = Flight::db()->lastInsertId();
         $token = self::generateToken($userId, true);
 

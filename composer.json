@@ -1,7 +1,7 @@
 {
     "require": {
         "ext-curl": "*",
-        "ext-sqlite3": "*",
+        "ext-pgsql": "*",
         "ext-uuid": "*",
         "flightphp/core": "^3.13",
         "micoli/docker-php-api-client": "^4.1",

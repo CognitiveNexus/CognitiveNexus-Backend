@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "085a4e6bf9ea12db137a19bb32c85a1b",
+    "content-hash": "69f74fca9a51f9f7f192ff5e8b7aa14d",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -2567,9 +2567,9 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "ext-sqlite3": "*",
         "ext-curl": "*",
-        "ext-uuid": "*"
+        "ext-uuid": "*",
+        "ext-pgsql": "*"
     },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"
