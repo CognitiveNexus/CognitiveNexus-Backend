@@ -16,5 +16,6 @@ class AuthMiddleware {
                 Flight::jsonHalt(['error' => '由于未知原因登录失败，请重新登录'], 401);
             }
         }
+        Flight::set('userId', $userId);
     }
 }

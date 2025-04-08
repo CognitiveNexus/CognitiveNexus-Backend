@@ -15,5 +15,10 @@ Flight::group('/api', function () {
         Flight::route('POST /ask-ai/@model', ['AIController', 'askAI'])->streamWithHeaders([
             'X-Accel-Buffering' => 'no',
         ]);
+
+        Flight::group('/progress/@courseName', function () {
+            Flight::route('GET /', ['ProgressController', 'get']);
+            Flight::route('POST /', ['ProgressController', 'set']);
+        });
     }, ['AuthMiddleware']);
 });
