@@ -49,7 +49,7 @@ cd CognitiveNexus-Backend
     server {
         listen 443 ssl default_server;
         listen [::]:443 ssl default_server;
-        
+
         # 添加 SSL 证书相关配置项
 
         server_name cognitive-nexus.com;
@@ -78,9 +78,25 @@ cd CognitiveNexus-Backend
 
     -   重命名 .env.example 为 .env
     -   根据需要填写环境变量值
-    -   ENVIRONMENT 项填写 `development` 时，可以享受开发环境的便利（如，允许所有 CORS 请求、抛出的错误直接显示在请求中），但这些便利是牺牲安全性的，因此在生产环境中部署时，请务必将 ENVIRONMENT 项改为 `production`。
+    -   ENVIRONMENT 项填写 `development` 时，可以享受开发环境的便利（如，允许所有 CORS 请求、抛出的错误直接显示在请求中），但这些便利会牺牲安全性，因此在生产环境中部署时，请务必将 ENVIRONMENT 项改为 `production`。
 
-### 3. 启动服务
+### 3. 安装并配置数据库
+
+1.  安装 PostgreSQL：
+
+    ```bash
+    sudo apt-get install postgresql
+    ```
+
+2.  配置独立的数据库账户、建立数据库，并将信息填入 .env 中；
+
+3.  建表：
+
+    ```bash
+    ./install.sh
+    ```
+
+### 4. 启动服务
 
 完成上述配置后，启动 HTTP 服务器即可访问服务。
 
