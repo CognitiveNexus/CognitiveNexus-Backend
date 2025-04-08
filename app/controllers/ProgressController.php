@@ -24,4 +24,13 @@ class ProgressController {
         );
         Flight::json(['success' => true]);
     }
+    public function getAll() {
+        $userId = Flight::get('userId');
+        $progressInfo = Flight::db()->fetchAll(
+            'SELECT course_name, progress FROM course_progress WHERE user_id = :user_id',
+            ['user_id' => $userId],
+        );
+        $progressInfo = empty($progressInfo) ? (object)[] : array_column($progressInfo, 'progress', 'course_name');
+        Flight::json(['success' => true, 'progress' => $progressInfo]);
+    }
 }

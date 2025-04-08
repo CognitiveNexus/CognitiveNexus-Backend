@@ -16,6 +16,7 @@ Flight::group('/api', function () {
             'X-Accel-Buffering' => 'no',
         ]);
 
+        Flight::route('GET /progress/all', ['ProgressController', 'getAll']);
         Flight::group('/progress/@courseName', function () {
             Flight::route('GET /', ['ProgressController', 'get']);
             Flight::route('POST /', ['ProgressController', 'set']);
