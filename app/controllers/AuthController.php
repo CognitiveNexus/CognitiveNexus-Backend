@@ -48,7 +48,7 @@ class AuthController {
         $userId = Flight::db()->lastInsertId();
         $token = self::generateToken($userId, true);
 
-        Flight::json(['message' => '注册成功', 'username' => $username, 'token' => $token], 200);
+        Flight::json(['success' => '注册成功', 'username' => $username, 'token' => $token], 200);
     }
 
     public static function checkToken($token) {
