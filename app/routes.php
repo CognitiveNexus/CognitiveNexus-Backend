@@ -23,11 +23,11 @@ Flight::group('/api', function () {
         });
 
         Flight::group('/comments', function () {
-            Flight::group('/@courseId', function () {
+            Flight::group('/@courseName', function () {
                 Flight::route('GET /', ['CommentController', 'getComments']);
                 Flight::route('POST /', ['CommentController', 'addComment']);
             });
-            Flight::route('POST /@courseId/@commentId/like', ['CommentController', 'likeComment']);
+            Flight::route('POST /@courseName/@commentId/like', ['CommentController', 'likeComment']);
         });
     }, ['AuthMiddleware']);
 });

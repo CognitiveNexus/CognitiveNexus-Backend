@@ -10,7 +10,11 @@ Flight::path(__DIR__.'/../app/controllers');
 Flight::path(__DIR__.'/../app/middlewares');
 
 $db = "pgsql:host={$_ENV['DB_HOST']};port={$_ENV['DB_PORT']};dbname={$_ENV['DB_NAME']}";
-Flight::register('db', \flight\database\PdoWrapper::class, [$db, $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD']]);
+Flight::register(
+    'db',
+    \flight\database\PdoWrapper::class,
+    [$db, $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], [PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]]
+);
 
 if ($_ENV['ENVIRONMENT'] !== 'development') {
     Flight::set('flight.log_errors', true);
