@@ -11,7 +11,19 @@ class CommentController {
             SQL,
             ['user_id' => $userId, 'course_name' => $courseName],
         );
-        Flight::json(['success' => true, 'comments' => $comments]);
+        Flight::json([
+            'success' => true,
+            'comments' => array_map(fn($comment) =>
+                [
+                    'id' => $comment['id'],
+                    'username' => $comment['username'],
+                    'content' => $comment['content'],
+                    'createdAt' => $comment['created_at'],
+                    'totalLikes' => $comment['total_likes'],
+                    'ownRate' => $comment['own_rate']
+                ],
+                $comments)
+        ]);
     }
     public function addComment($courseName) {
         $userId = Flight::get('userId');
