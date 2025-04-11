@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS course_comments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_course_comments_course_name ON course_comments(course_name);
+CREATE INDEX IF NOT EXISTS idx_course_comments_created_at ON course_comments(created_at);
 
 CREATE TABLE IF NOT EXISTS course_comments_likes (
     id SERIAL PRIMARY KEY,
@@ -43,6 +44,7 @@ CREATE TABLE IF NOT EXISTS course_comments_likes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (comment_id, user_id)
 );
+CREATE INDEX IF NOT EXISTS idx_ccl_comment_id ON course_comments_likes(comment_id);
 CREATE INDEX IF NOT EXISTS idx_ccl_comment_id_rate ON course_comments_likes(comment_id, rate);
 
 CREATE OR REPLACE FUNCTION course_comments_with_likes(p_user_id integer)
