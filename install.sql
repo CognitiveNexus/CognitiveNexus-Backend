@@ -54,7 +54,7 @@ CREATE OR REPLACE FUNCTION course_comments_with_likes(
 RETURNS TABLE (
     id INTEGER,
     course_name TEXT,
-    user_id INTEGER,
+    username VARCHAR(15),
     content TEXT,
     created_at TIMESTAMP,
     total_likes INTEGER,
@@ -63,7 +63,7 @@ RETURNS TABLE (
 SELECT 
     cc.id,
     cc.course_name,
-    cc.user_id,
+    u.username,
     cc.content,
     cc.created_at,
     COALESCE(ccl.total_likes, 0) AS total_likes,
@@ -77,5 +77,6 @@ LEFT JOIN LATERAL (
 LEFT JOIN course_comments_likes ccl_own 
     ON ccl_own.comment_id = cc.id 
     AND ccl_own.user_id = p_user_id
+LEFT JOIN users u ON u.id = cc.user_id
 WHERE cc.course_name = p_course_name;
 $$ LANGUAGE SQL STABLE;
