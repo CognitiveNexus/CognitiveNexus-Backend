@@ -25,3 +25,47 @@ CREATE TABLE IF NOT EXISTS course_progress (
     progress INTEGER DEFAULT 0,
     UNIQUE (course_name, user_id)
 );
+
+CREATE TABLE IF NOT EXISTS course_comments (
+    id SERIAL PRIMARY KEY,
+    course_name TEXT NOT NULL,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    comment TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_course_comments_course_name ON course_comments(course_name);
+
+CREATE TABLE IF NOT EXISTS course_comments_likes (
+    id SERIAL PRIMARY KEY,
+    comment_id INTEGER NOT NULL REFERENCES course_comments(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    rate INT DEFAULT 0 CHECK (rate IN (1, -1)),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (comment_id, user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_ccl_comment_id_rate ON course_comments_likes(comment_id, rate);
+
+CREATE OR REPLACE FUNCTION course_comments_with_likes(p_user_id integer)
+RETURNS TABLE (
+    id INTEGER,
+    course_name TEXT,
+    user_id INTEGER,
+    comment TEXT,
+    created_at TIMESTAMP,
+    total_likes INTEGER,
+    own_rate INTEGER
+) AS $$
+SELECT 
+    cc.*, 
+    COALESCE(ccl.total_likes, 0) AS total_likes,
+    COALESCE(ccl_own.rate, 0) AS own_rate
+FROM course_comments cc
+LEFT JOIN LATERAL (
+    SELECT SUM(rate) AS total_likes
+    FROM course_comments_likes
+    WHERE comment_id = cc.id
+) ccl ON true
+LEFT JOIN course_comments_likes ccl_own 
+    ON ccl_own.comment_id = cc.id 
+    AND ccl_own.user_id = p_user_id;
+$$ LANGUAGE SQL STABLE;

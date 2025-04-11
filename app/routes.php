@@ -21,5 +21,13 @@ Flight::group('/api', function () {
             Flight::route('GET /', ['ProgressController', 'get']);
             Flight::route('POST /', ['ProgressController', 'set']);
         });
+
+        Flight::group('/comments', function () {
+            Flight::group('/@courseId', function () {
+                Flight::route('GET /', ['CommentController', 'getComments']);
+                Flight::route('POST /', ['CommentController', 'addComment']);
+            });
+            Flight::route('POST /@courseId/@commentId/like', ['CommentController', 'likeComment']);
+        });
     }, ['AuthMiddleware']);
 });
