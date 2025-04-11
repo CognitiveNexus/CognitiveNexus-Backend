@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS course_comments_likes (
     id SERIAL PRIMARY KEY,
     comment_id INTEGER NOT NULL REFERENCES course_comments(id) ON DELETE CASCADE,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    rate INT DEFAULT 0 CHECK (rate IN (1, -1)),
+    rate INT DEFAULT 0 CHECK (rate IN (1, 0, -1)),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (comment_id, user_id)
 );
