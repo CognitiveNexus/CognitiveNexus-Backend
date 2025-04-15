@@ -20,6 +20,7 @@ class AuthController {
 
     public static function register() {
         ['username' => $username, 'password' => $password, 'invite_code' => $inviteCode] = Flight::request()->data;
+        $requireCode = $_ENV['REQUIRE_INVITE_CODE'] !== 'false';
 
         if (!$username || mb_strlen($username) < 5 || mb_strlen($username) > 15) {
             Flight::jsonHalt(['error' => '用户名长度必须在 5 到 15 个字符之间'], 406);
@@ -27,24 +28,28 @@ class AuthController {
         if (!$password || strlen($password) < 8 || strlen($password) > 50) {
             Flight::jsonHalt(['error' => '密码长度必须在 8 到 50 个字符之间'], 406);
         }
-        if (!$inviteCode) {
-            Flight::jsonHalt(['error' => '未提供邀请码'], 406);
-        }
 
-        $invite = Flight::db()->fetchRow('SELECT * FROM invite_codes WHERE code = :code AND is_used = FALSE', ['code' => $inviteCode]);
-        if (!$invite->count()) {
-            Flight::jsonHalt(['error' => '邀请码无效或已被使用'], 406);
+        if ($requireCode) {
+            if (!$inviteCode) {
+                Flight::jsonHalt(['error' => '未提供邀请码'], 406);
+            }
+            $invite = Flight::db()->fetchRow('SELECT * FROM invite_codes WHERE code = :code AND is_used = FALSE', ['code' => $inviteCode]);
+            if (!$invite->count()) {
+                Flight::jsonHalt(['error' => '邀请码无效或已被使用'], 406);
+            }
         }
         $existingUser = Flight::db()->fetchRow('SELECT * FROM users WHERE username = :username', ['username' => $username]);
         if ($existingUser->count()) {
             Flight::jsonHalt(['error' => '用户名已被注册'], 406);
         }
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+        if ($requireCode) {
+            Flight::db()->runQuery('UPDATE invite_codes SET is_used = TRUE WHERE code = :code', ['code' => $inviteCode]);
+        }
         Flight::db()->runQuery('INSERT INTO users (username, password) VALUES (:username, :password)', [
             'username' => $username,
             'password' => $hashedPassword,
         ]);
-        Flight::db()->runQuery('UPDATE invite_codes SET is_used = TRUE WHERE code = :code', ['code' => $inviteCode]);
         $userId = Flight::db()->lastInsertId();
         $token = self::generateToken($userId, true);
 
